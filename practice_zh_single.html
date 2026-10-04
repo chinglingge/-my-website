@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>青嶺閣 - 練功房</title>
+    <!-- 讀取同資料夾底下的實體晶片檔案，破除開新分頁與本地 file:/// 的安全封鎖 -->
+    <script src="html2pdf.bundle.min.js"></script>
+    <style>
+        /* ── 青嶺閣：練功房文青極簡水墨視覺設計 ── */
+        body { 
+            font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; 
+            background-color: #f7f6f2; margin: 0; padding: 30px 20px; color: #2b2b2b; 
+        }
+        
+        /* 墨韻風格控制台 UI */
+        .no-print { max-width: 750px; margin: 0 auto 40px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 4px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.02); padding: 35px; text-align: center; }
+        .ui-header { font-size: 30px; font-weight: bold; color: #1a1a1a; margin-bottom: 5px; letter-spacing: 4px; }
+        .ui-subheader { font-size: 14px; font-weight: 400; color: #7a7a7a; margin-bottom: 25px; letter-spacing: 2px; }
+        
+        /* 【澎湖網同款功能】中英泰語系原地切換標籤 (Tabs) */
+        .tabs-container { display: flex; justify-content: center; gap: 0; border-top: 1px solid #222222; border-bottom: 1px solid #222222; margin-bottom: 25px; background: #fafafa; }
+        .tab-btn { flex: 1; padding: 14px 10px; font-size: 15px; font-weight: bold; color: #444444; background: none; border: none; border-right: 1px solid #eeeeee; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; }
+        .tab-btn:last-child { border-right: none; }
+        .tab-btn:hover:not(.active) { background-color: #f0f0f0; color: #000000; }
+        /* 選中時呈現水墨濃黑底色 */
+        .tab-btn.active { background: #222222; color: #ffffff !important; }
+        
+        /* 表單與輸入區域 */
+        .form-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #1a1a1a; letter-spacing: 1px; }
+        select { width: 100%; padding: 12px; font-size: 15px; border: 1px solid #cccccc; border-radius: 4px; box-sizing: border-box; background-color: #ffffff; color: #333333; font-family: inherit; margin-bottom: 15px; cursor: pointer; }
+        textarea { width: 100%; height: 80px; padding: 14px; font-size: 15px; border: 1px solid #cccccc; border-radius: 4px; box-sizing: border-box; resize: vertical; margin-bottom: 20px; background-color: #ffffff; font-family: inherit; }
+        textarea:focus, select:focus { outline: none; border-color: #222222; }
+        
+        /* 按鈕控制 */
+        .btn-container { display: flex; gap: 15px; }
+        button.action-btn { flex: 1; padding: 16px; font-size: 15px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; letter-spacing: 1px; border: none; }
+        .btn-gen { background-color: #ffffff; color: #444444; border: 1px solid #cccccc; }
+        .btn-gen:hover { background-color: #f0f0f0; color: #000000; }
+        .btn-print { background-color: #222222; color: #ffffff; }
+        .btn-print:hover { background-color: #444444; }
+        
+        .back-home { display: inline-block; margin-top: 25px; font-size: 14px; color: #7a7a7a; text-decoration: none; font-weight: bold; }
+        .back-home:hover { color: #222222; text-decoration: underline; }
+
+        /* ================= A4 畫布與格式排版 ================= */
+        #printArea { width: 210mm; margin: 0 auto; }
+        .page { width: 210mm; height: 295mm; background: white; box-sizing: border-box; padding: 20mm 15mm; page-break-after: always; position: relative; }
+        .grid-table { display: flex; flex-direction: column; width: 100%; }
+        .grid-row { display: flex; margin-bottom: -1px; }
+        .grid-wrapper { display: flex; box-sizing: border-box; margin-right: -1px; }
+        
+        /* --- 中文田字格結構 --- */
+        .zh-box { width: 24mm; height: 24mm; border: 1px solid #000000; position: relative; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: #ffffff; }
+        .zh-box::before, .zh-box::after { content: ""; position: absolute; border-style: dashed; border-color: #ff9999; z-index: 1; }
+        .zh-box::before { width: 100%; height: 0; top: 50%; left: 0; border-width: 0.75px 0 0 0; }
+        .zh-box::after { width: 0; height: 100%; top: 0; left: 50%; border-width: 0 0 0 0.75px; }
+        .pinyin-box { width: 6mm; height: 24mm; border: 1px solid #000000; margin-left: -1px; box-sizing: border-box; position: relative; background: #ffffff; }
+        .pinyin-dash { width: 0; height: 100%; border-left: 0.75px dashed #ff9999; position: absolute; left: 50%; top: 0; }
+        
+        /* --- 英文四線格結構 (美樂蒂橫向流水簿) --- */
+        .en-row-strip { width: 100%; height: 20mm; border: 1px solid #000000; margin-bottom: -1px; position: relative; box-sizing: border-box; display: flex; align-items: center; background: #ffffff; padding-left: 5mm; letter-spacing: 6mm; white-space: pre; margin-top: 1px; }
+        .en-row-strip::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 25%, #ff9999 25%, #ff9999 26%, transparent 26%, transparent 50%, #ff9999 50%, #ff9999 51%, transparent 51%, transparent 75%, #000000 75%, #000000 76.5%, transparent 76.5% ); background-size: 100% 100%; z-index: 1; pointer-events: none; }
+        
+        /* --- 泰文四線格結構 (加寬24mm防切聲調) --- */
+        .th-row-strip { width: 100%; height: 24mm; border: 1px solid #000000; margin-bottom: -1px; position: relative; box-sizing: border-box; display: flex; align-items: center; background: #ffffff; padding-left: 5mm; letter-spacing: 7mm; white-space: pre; margin-top: 1px; }
+        .th-row-strip::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 25%, #ff9999 25%, #ff9999 26%, transparent 26%, transparent 50%, #ff9999 50%, #ff9999 51%, transparent 51%, transparent 75%, #000000 75%, #000000 76.5%, transparent 76.5% ); background-size: 100% 100%; z-index: 1; pointer-events: none; }
+
+        /* 字體與定位類別 */
+        .text-char { font-size: 15mm; z-index: 5; transform: translateY(-1px); }
+        
+        /* 英文與泰文模式微調 */
+        .layout-en .text-char { font-size: 11mm; font-family: "The Peak Font Plus", "隨峰體", "Arial", sans-serif; display: inline-block; transform: translateY(1.5mm); letter-spacing: normal; }
+        .layout-th .text-char { font-size: 10mm; font-family: "Itim", "Sriracha", "Arial", sans-serif; display: inline-block; transform: translateY(-0.5mm); letter-spacing: normal; }
+        
+        /* 灰度與留白控制 */
+        .row-example, .row-example .text-char { color: #000000 !important; } 
+        .row-trace, .row-trace .text-char { color: #dcdcdc !important; }   
+        .row-empty .text-char { display: none !important; }
+        
+        .line-group { margin-bottom: 12mm; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="no-print">
+        <div class="ui-header">青嶺閣 ． 練功房</div>
+        <div class="ui-subheader">多語系硬筆字帖客製化系統</div>
+        
+        <!-- 【澎湖網同款原地無縫功能】中英泰語系切換導覽列 -->
+        <div class="tabs-container">
+            <button class="tab-btn active" id="tab-zh" onclick="switchLanguage('zh')">中文田字格</button>
+            <button class="tab-btn" id="tab-en" onclick="switchLanguage('en')">英文四線簿</button>
+            <button class="tab-btn" id="tab-th" onclick="switchLanguage('th')">泰文四線格</button>
+        </div>
+
+        <!-- 字體選擇選單 (僅在中文模式下顯現) -->
+        <div class="form-group" id="fontSelectorGroup">
+            <label for="fontSelect">✦ 選擇想練習的文青字體：</label>
+            <select id="fontSelect" onchange="changeFont()">
+                <option value="'The Peak Font Plus', '隨峰體 Plus', '隨峰體', 'ThePeakFontPlus'">首選 ── 隨峰體 (骨感鋼筆手寫風)</option>
+                <option value="'ChenyuNoDropAnchor', '辰宇落雁體', 'chenyuluoyan'">推薦 ── 辰宇落雁體 1.0 (原版手寫風)</option>
+                <option value="'ChenyuNoDropAnchor-Thin', '辰宇落雁體 2.0'">推薦 ── 辰宇落雁體 2.0 (極簡網美風)</option>
+                <option value="'清松手寫體', 'JasonHandwriting'">精選 ── 清松手寫體 1 號 (日常原子筆感)</option>
+                <option value="'清松手寫體2', 'JasonHandwriting2'">精選 ── 清松手寫體 2 號</option>
+                <option value="'清松手寫體3', 'JasonHandwriting3'">精選 ── 清松手寫體 3 號</option>
+                <option value="'清松手寫體4', 'JasonHandwriting4'">精選 ── 清松手寫體 4 號</option>
+                <option value="'清松手寫體5', 'JasonHandwriting5'">精選 ── 清松手寫體 5 號</option>
+                <option value="'DFKai-SB', '標楷體'">標準 ── 系統標楷體</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label id="inputLabel" for="textInput">✦ 輸入練字生字或經典真言：</label>
+            <textarea id="textInput" oninput="generateSheets()">南無薄伽伐帝鞞殺社窶嚕</textarea>
+        </div>
+        
+        <div class="btn-container">
+            <button class="action-btn btn-gen" id="pinyinBtn" onclick="togglePinyin()">切換：預留右側注音格</button>
+            <button class="action-btn btn-print" onclick="downloadPDF()">一鍵自動生成並下載 PDF</button>
+        </div>
+        
+        <a class="back-home" href="index.html" target="_self">← 返回大首頁選單（不另開分頁）</a>
+    </div>
+
+    <!-- 字帖渲染畫布 -->
+    <div id="printArea"></div>
+
+    <!-- ================= 核心 JavaScript 處理程序 ================= -->
+    <script>
+        let currentLang = 'zh';
+        let hasPinyin = false;
+        
+        // 原生標籤切換程式：完全在原地抽換控制台介面與文字
+        function switchLanguage(lang) {
+            currentLang = lang;
+            
+            // 切換高亮樣式
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-' + lang).classList.add('active');
+            
+            const inputLabel = document.getElementById('inputLabel');
+            const textInput = document.getElementById('textInput');
+            const fontGroup = document.getElementById('fontSelectorGroup');
+            const pinyinBtn = document.getElementById('pinyinBtn');
+            
+            if (lang === 'zh') {
+                inputLabel.innerText = "✦ 輸入練字生字或經典真言：";

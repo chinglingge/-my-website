@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>青嶺閣 - 文青水墨硬筆書法系統</title>
+    <style>
+        /* ── 青嶺閣：文青極簡水墨視覺設計 ── */
+        body { 
+            font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; 
+            background-color: #f7f6f2; /* 古樸宣紙色 */
+            background-image: radial-gradient(circle at 80% 20%, rgba(200,200,200,0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 10% 80%, rgba(150,150,150,0.12) 0%, transparent 40%);
+            margin: 0; padding: 0; color: #2b2b2b; min-height: 100vh; display: flex; flex-direction: column; 
+        }
+        
+        /* 頂部語言切換 */
+        .translate-wrapper { 
+            max-width: 1000px; margin: 20px auto 0; width: 100%; text-align: right; 
+            display: flex; justify-content: flex-end; align-items: center; font-size: 13px; color: #7a7a7a; padding: 0 40px; box-shadow: none;
+        }
+        .translate-label { margin-right: 8px; font-weight: bold; letter-spacing: 1px; }
+        .custom-lang-select {
+            padding: 6px 24px 6px 12px; font-size: 13px; font-weight: bold; border: 1px solid #cccccc; border-radius: 4px;
+            background-color: #ffffff; color: #333333; outline: none; cursor: pointer;
+        }
+
+        /* 主框架大卡片 */
+        .main-container { 
+            max-width: 1000px; margin: 30px auto 60px; width: 100%; background: #ffffff; 
+            border-radius: 4px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.03); 
+            padding: 60px; box-sizing: border-box; flex: 1; display: flex; flex-direction: column;
+            border-left: 1px solid #eaeaea; border-right: 1px solid #eaeaea;
+        }
+
+        /* 標題區：文青豎排感與徽派水墨黑 */
+        .header-section { margin-bottom: 50px; text-align: center; }
+        .menu-header { 
+            font-size: 46px; font-weight: bold; color: #1a1a1a; margin: 0 0 10px 0; 
+            letter-spacing: 16px; text-indent: 16px;
+        }
+        .menu-subheader { 
+            font-size: 14px; font-weight: 400; color: #7a7a7a; margin-bottom: 40px; 
+            letter-spacing: 6px; text-transform: uppercase; 
+        }
+        
+        /* 水平橫向導覽選單（原地切換選單） */
+        .nav-bar { 
+            display: flex; justify-content: center; gap: 0; 
+            border-top: 1px solid #222222; border-bottom: 1px solid #222222; 
+            margin-bottom: 50px; background: #fafafa;
+        }
+        .nav-item { 
+            flex: 1; padding: 18px 10px; font-size: 17px; font-weight: bold; color: #444444; 
+            text-decoration: none; cursor: pointer; transition: all 0.3s ease; letter-spacing: 4px; text-indent: 4px;
+            border-right: 1px solid #eeeeee;
+        }
+        .nav-item:last-child { border-right: none; }
+        .nav-item.active { background-color: #222222; color: #ffffff !important; }
+        .nav-item:hover:not(.active) { background-color: #f0f0f0; color: #000000; }
+
+        /* 原地動態抽換的內容容器 */
+        .dynamic-content-area { 
+            text-align: left; line-height: 1.8; font-size: 16px; color: #333333; 
+            flex: 1; padding: 10px 20px; box-sizing: border-box;
+        }
+
+        /* 項目內文文青排版細節 */
+        .content-title { font-size: 24px; font-weight: bold; color: #1a1a1a; margin-bottom: 25px; border-left: 4px solid #222222; padding-left: 12px; letter-spacing: 2px; }
+        .content-p { margin-bottom: 20px; color: #444444; text-align: justify; }
+        
+        /* 水墨感大按鈕連結 */
+        .blind-link { display: inline-block; padding: 12px 24px; font-weight: bold; color: #ffffff; background: #222222; border-radius: 4px; text-decoration: none; margin-top: 15px; transition: background 0.2s; cursor: pointer; }
+        .blind-link:hover { background: #444444; }
+
+        .menu-footer { margin-top: 60px; font-size: 13px; color: #999999; border-top: 1px solid #eeeeee; padding-top: 25px; letter-spacing: 1px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <!-- 跨國三語切換選單 -->
+    <div class="translate-wrapper">
+        <span class="translate-label" id="lblLang">語言 / Language / ภาษา：</span>
+        <select class="custom-lang-select" id="langSelect" onchange="translatePage()">
+            <option value="zh">繁體中文</option>
+            <option value="en">English</option>
+            <option value="th">ภาษาไทย</option>
+        </select>
+    </div>
+
+    <div class="main-container">
+        <!-- 頂部標題區 -->
+        <div class="header-section">
+            <div class="menu-header" id="mainTitle">青嶺閣</div>
+            <div class="menu-subheader" id="subTitle">CHING LING ACADEMY ． 身心長青 ． 筆墨如山嶺般挺拔</div>
+        </div>
+        
+        <!-- 導覽選單（絕不另開分頁，點擊原地抽換） -->
+        <div class="nav-bar">
+            <div class="nav-item active" id="btn-intro" onclick="showSection('intro')">網站介紹</div>
+            <div class="nav-item" id="btn-book" onclick="showSection('book')">藏書閣</div>
+            <div class="nav-item" id="btn-write" onclick="showSection('write')">練功房</div>
+        </div>
+
+        <!-- 原地動態抽換的內容畫布 -->
+        <div class="dynamic-content-area" id="stageContent">
+            <!-- 預設載入網站介紹 -->
+        </div>
+
+        <div class="menu-footer" id="footerText">
+            「身心長青，字若山嶺 ── 藏骨於水墨之中。」<br>歡迎來到青嶺閣 ． 本系統由本地安全端自體運算 ． 永久免費 ． 完美支援 GitHub Pages 雲端部署
+        </div>
+    </div>
+
+    <!-- ================= 核心 JavaScript 邏輯（全面修復衝突語法） ================= -->
+    <script>
+        // 核心修正：將內文中的連結按鈕完全與 JS 切換解耦，保證點擊 100% 絕對成功
+        const sectionContent = {
+            intro: `
+                <div class="content-title" id="md-title-intro">緣起 ． 青嶺墨韻</div>
+                <p class="content-p" id="md-p1-intro">歡迎步入「青嶺閣」，這是一處專為左撇子硬筆愛好者與成人書法修習者安頓身心的數位水墨書齋。</p>
+                <p class="content-p" id="md-p2-intro">古人云：「字如其人，藏鋒蓄銳。」我們取名青嶺，意在追求如山嶺般蒼翠長青的健康身心，以及筆畫間剛健挺拔的巍峨風骨。在這裡，筆墨不再是繁瑣的紙張束縛，而是手起墨落間的心靈療癒。我們透過現代化的瀏覽器科技，將古樸的水墨情懷轉化為客製化字帖與經典書卷，陪伴您握緊手頭的本命神筆，在方寸格子之間，體會字若高峰的極致美學。</p>
+            `,
+            book: `
+                <div class="content-title" id="md-title-book">藏書閣</div>
+                <p class="content-p" id="md-p1-book">藏書閣為青嶺閣收藏古今中外文獻與經典真言的靜謐書房。此處供奉《藥師琉璃光如來本願功德經》全文、梵音灌頂真言、以及經典多語系文藝選輯。</p>
+                <p class="content-p" id="md-p2-book">我們特別為左撇子修習者優化了排版，頁面自帶古樸的淡黃宣紙質感與柔和的夜間舒眠閱讀色調。您可以一邊品讀經文的深邃智慧，一邊切換為瘦勁的隨峰體或溫潤的落雁體進行視覺臨摹，洗滌心靈。</p>
+                <a class="blind-link" id="md-lnk-book" href="book_reader.html" target="_self">進入藏書閣讀書（不另開分頁） →</a>
+            `,
+            write: `
+                <div class="content-title" id="md-title-write">練功房</div>
+                <p class="content-p" id="md-p1-write">教材字帖製作中心。專為成人原子筆與鋼筆控筆、結構矯正量身打造的硬筆練功房。</p>
+                <p class="content-p" id="md-p2-write">不論是需要集中矯正的中文單字田字格，還是照片同款的美式英文四線流水簿、亦或是高難度的泰文三層四線格，皆可在控制台內一鍵切換。系統解鎖了包含隨峰體與辰宇落雁體在內的 9 大硬筆字型，支援一鍵背景自動打包並下載標準 A4 紅十字虛線字帖 PDF，讓您落筆秒乾、手絕不沾黑。</p>
+                <a class="blind-link" id="md-lnk-write" href="practice_zh_single.html" target="_self">進入練功房修習（不另開分頁） →</a>
+            `
+        };
+
+        function showSection(sectionKey) {
+            // 1. 切換導覽列按鈕高亮狀態
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + sectionKey).classList.add('active');
+            
+            // 2. 原地更換內文畫布
+            document.getElementById('stageContent').innerHTML = sectionContent[sectionKey];
+            
+            // 3. 自動連動多語系字典
+            translatePage();
+        }
+
+        // 跨國三語字典轉譯引擎
+        const dictionary = {
+            zh: {
+                lblLang: "語言 / Language / ภาษา：", mainTitle: "青嶺閣",
+                subTitle: "CHING LING ACADEMY ． 身心長青 ． 筆墨如山嶺般挺拔",
+                btnIntro: "網站介紹", btnBook: "藏書閣", btnWrite: "練功房",
+                footerText: "「身心長青，字若山嶺 ── 藏骨於水墨之中。」<br>歡迎來到青嶺閣 ． 本系統由本地安全端自體運算 ． 永久免費 ． 完美支援 GitHub Pages 雲端部署"
+            },
+            en: {
+                lblLang: "Language：", mainTitle: "Ching Ling Academy",
+                subTitle: "CHING LING ACADEMY . Health, Vitality & Strong Ink Strokes",
+                btnIntro: "Introduction", btnBook: "Library Tower", btnWrite: "Practice Pavilion",
+                footerText: "'Keep body fit and brush strokes strong like ridges.'<br>Welcome to Ching Ling Academy . Secure Local Computing . Permanently Free . Ready for GitHub Pages"
+            },
+            th: {
+                lblLang: "ภาษา：", mainTitle: "ชิงหลิ่งเกอ",
+                subTitle: "CHING LING ACADEMY . สุขภาพที่ยั่งยืนและศิลปะการเขียนพู่กันจีนด้วยพู่กันอันทรงพลัง",
+                btnIntro: "แนะนำเว็บไซต์", btnBook: "หอไตร", btnWrite: "ห้องฝึกฝน",
+                footerText: "'ร่างกายแข็งแรง ลายเส้นพู่กันทรงพลังดั่งทิวเขา'<br>ยินดีต้อนรับสู่ ชิงหลิ่งเกอ . ประมวลผลในเครื่องอย่างปลอดภัย . ฟรีตลอดไป . รองรับ GitHub Pages"
+            }
+        };
+
+        function translatePage() {
+            const lang = document.getElementById("langSelect").value;
+            const dict = dictionary[lang];
+            
+            document.getElementById("lblLang").innerText = dict.lblLang;
+            document.getElementById("mainTitle").innerText = dict.mainTitle;
+            document.getElementById("subTitle").innerText = dict.subTitle;
+            document.getElementById("btn-intro").innerText = dict.btnIntro;
+            document.getElementById("btn-book").innerText = dict.btnBook;
+            document.getElementById("btn-write").innerText = dict.btnWrite;
+            document.getElementById("footerText").innerHTML = dict.footerText;
+            
+            if (lang === 'en') {
+                if(document.getElementById("md-title-intro")) {
+                    document.getElementById("md-title-intro").innerText = "The Philosophy of Ching Ling";
+                    document.getElementById("md-p1-intro").innerText = "Welcome to Ching Ling Academy, a digital ink study tailored for left-handed calligraphy lovers.";
